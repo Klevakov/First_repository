@@ -1,5 +1,6 @@
 import datetime as dt
 import requests
+import location
 
 DATABASE = {
     'Сергей': 'Омск',
@@ -80,6 +81,10 @@ def process_anfisa(query):
         unique_cities = set(DATABASE.values())
         cities_string = ', '.join(unique_cities)
         return f'Твои друзья в городах: {cities_string}'
+    elif query[:22] == 'какое расстояние между':
+        friends_name1 = query.split(' и ')[1].strip('?')
+        friends_name2 = query.split(' и ')[0].split(' ')[-1]
+        return f'{round(location.distance(DATABASE[friends_name1], DATABASE[friends_name2]))} км'
     else:
         return '<неизвестный запрос>'
 
@@ -126,7 +131,9 @@ def runner():
         'Петя, который час?',
         'Коля, как погода?',
         'Соня, как погода?',
-        'Антон, как погода?'
+        'Антон, как погода?',
+        'Анфиса, какое расстояние между Сергей и Соня?',
+        'Анфиса, какое расстояние между Петя и Миша?'
     ]
     for query in queries:
         print(query, '-', process_query(query))
