@@ -1,6 +1,8 @@
 import datetime as dt
 import requests
 import location
+from translate import Translator
+
 
 DATABASE = {
     'Сергей': 'Омск',
@@ -70,6 +72,12 @@ def what_weather(city):
             return '<ошибка на сервере погоды>'
 
 
+def translate(letter, from_lang="English", to_lang="Russian"):
+    translator = Translator(from_lang=from_lang, to_lang=to_lang)
+    result = translator.translate(letter)
+    return result
+
+
 def process_anfisa(query):
     if query == 'сколько у меня друзей?':
         count_string = format_count_friends(len(DATABASE))
@@ -85,6 +93,8 @@ def process_anfisa(query):
         friends_name1 = query.split(' и ')[1].strip('?')
         friends_name2 = query.split(' и ')[0].split(' ')[-1]
         return f'{round(location.distance(DATABASE[friends_name1], DATABASE[friends_name2]))} км'
+    elif query[:9] == 'переведи:':
+        return translate(query[9:])
     else:
         return '<неизвестный запрос>'
 
@@ -134,6 +144,7 @@ def runner():
         'Антон, как погода?',
         'Анфиса, какое расстояние между Сергей и Соня?',
         'Анфиса, какое расстояние между Петя и Миша?'
+        'Анфиса, переведи: What is your name?'
     ]
     for query in queries:
         print(query, '-', process_query(query))
