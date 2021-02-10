@@ -1,5 +1,7 @@
 import datetime as dt
 import requests
+from translate import Translator
+
 
 DATABASE = {
     'Сергей': 'Омск',
@@ -69,6 +71,12 @@ def what_weather(city):
             return '<ошибка на сервере погоды>'
 
 
+def translate(letter, from_lang="English", to_lang="Russian"):
+    translator = Translator(from_lang=from_lang, to_lang=to_lang)
+    result = translator.translate(letter)
+    return result
+
+
 def process_anfisa(query):
     if query == 'сколько у меня друзей?':
         count_string = format_count_friends(len(DATABASE))
@@ -80,6 +88,8 @@ def process_anfisa(query):
         unique_cities = set(DATABASE.values())
         cities_string = ', '.join(unique_cities)
         return f'Твои друзья в городах: {cities_string}'
+    elif query[:9] == 'переведи:':
+        return translate(query[9:])
     else:
         return '<неизвестный запрос>'
 
@@ -126,7 +136,8 @@ def runner():
         'Петя, который час?',
         'Коля, как погода?',
         'Соня, как погода?',
-        'Антон, как погода?'
+        'Антон, как погода?',
+        'Анфиса, переведи: What is your name?'
     ]
     for query in queries:
         print(query, '-', process_query(query))
